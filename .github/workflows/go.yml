@@ -24,8 +24,11 @@ jobs:
     - name: Install dependencies
       run: go mod tidy
 
-    - name: Build
-      run: go build -v ./...
+    - name: Build Domain Proxy Server
+      run: go build -v -o bin/domainproxyserver cmd/server/main.go
+
+    - name: Build Domain Proxy Client
+      run: go build -v -o bin/domainproxyclient cmd/client/main.go
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v ./test
