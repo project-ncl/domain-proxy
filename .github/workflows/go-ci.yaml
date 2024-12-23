@@ -18,7 +18,7 @@ jobs:
         uses: golangci/golangci-lint-action@v6.1.1
         with:
           args: "--timeout=10m --build-tags='normal periodic minikube'"
-  go:
+  check_sources:
     name: Check sources
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
@@ -47,8 +47,8 @@ jobs:
             git --no-pager diff
             exit 1
           fi
-  unit:
-    name: Golang Unit tests
+  tests:
+    name: Golang tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
