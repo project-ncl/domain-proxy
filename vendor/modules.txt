@@ -1,0 +1,15 @@
+# github.com/elazarl/goproxy v0.0.0-20241218172127-ac55c7698e0d
+## explicit; go 1.20
+github.com/elazarl/goproxy
+# golang.org/x/net v0.32.0
+## explicit; go 1.18
+golang.org/x/net/http/httpguts
+golang.org/x/net/http2
+golang.org/x/net/http2/hpack
+golang.org/x/net/idna
+# golang.org/x/text v0.21.0
+## explicit; go 1.18
+golang.org/x/text/secure/bidirule
+golang.org/x/text/transform
+golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm
