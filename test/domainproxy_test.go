@@ -30,7 +30,7 @@ const (
 	ContentLength      = "403"
 	MockUrlPath        = "/com/foo/bar/1.0/bar-1.0.pom"
 	NonExistentUrlPath = "/com/foo/bar/1.0/bar-2.0.pom"
-	NonWhitelistedUrl  = "repo1.maven.org/maven2/org/apache/maven/plugins/maven-jar-plugin/3.4.1/maven-jar-plugin-3.4.1.jar"
+	NonAllowedUrl      = "repo1.maven.org/maven2/org/apache/maven/plugins/maven-jar-plugin/3.4.1/maven-jar-plugin-3.4.1.jar"
 	NonExistentHost    = "foo.bar"
 	User               = "foo"
 	Password           = "bar"
@@ -143,7 +143,7 @@ func commonTestBehaviour(t *testing.T, qualifier string) {
 	// Set env variables
 	t.Setenv(DomainSocketKey, getRandomDomainSocket())
 	t.Setenv(HttpPortKey, DomainProxyPort)
-	t.Setenv(TargetWhitelistKey, "127.0.0.1,foo.bar")
+	t.Setenv(TargetAllowlistKey, "127.0.0.1,foo.bar")
 	// Start services
 	domainProxyServer, domainProxyClient := startDomainProxy()
 	defer stopDomainProxy(domainProxyServer, domainProxyClient)
@@ -215,8 +215,8 @@ func commonTestBehaviour(t *testing.T, qualifier string) {
 		}
 	})
 
-	t.Run(fmt.Sprintf("Test HTTP non-whitelisted host%s", qualifier), func(t *testing.T) {
-		response, err := httpClient.Get("http://" + NonWhitelistedUrl)
+	t.Run(fmt.Sprintf("Test HTTP non-allowed host%s", qualifier), func(t *testing.T) {
+		response, err := httpClient.Get("http://" + NonAllowedUrl)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -226,8 +226,8 @@ func commonTestBehaviour(t *testing.T, qualifier string) {
 		}
 	})
 
-	t.Run(fmt.Sprintf("Test HTTPS non-whitelisted host%s", qualifier), func(t *testing.T) {
-		_, err := httpClient.Get("https://" + NonWhitelistedUrl)
+	t.Run(fmt.Sprintf("Test HTTPS non-allowed host%s", qualifier), func(t *testing.T) {
+		_, err := httpClient.Get("https://" + NonAllowedUrl)
 		statusText := http.StatusText(http.StatusForbidden)
 		if !strings.Contains(err.Error(), statusText) {
 			t.Fatalf("Actual error %s did not contain expected HTTP status text %s", err.Error(), statusText)
