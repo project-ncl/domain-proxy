@@ -17,8 +17,8 @@ import (
 const (
 	HttpPort                     = 80
 	HttpsPort                    = 443
-	TargetWhitelistKey           = "DOMAIN_PROXY_TARGET_WHITELIST"
-	DefaultTargetWhitelist       = "localhost,repo.maven.apache.org,repository.jboss.org,packages.confluent.io,jitpack.io,repo.gradle.org,plugins.gradle.org"
+	TargetAllowlistKey           = "DOMAIN_PROXY_TARGET_ALLOWLIST"
+	DefaultTargetAllowlist       = "localhost,repo.maven.apache.org,repository.jboss.org,packages.confluent.io,jitpack.io,repo.gradle.org,plugins.gradle.org"
 	EnableInternalProxyKey       = "DOMAIN_PROXY_ENABLE_INTERNAL_PROXY"
 	DefaultEnableInternalProxy   = false
 	InternalProxyHostKey         = "DOMAIN_PROXY_INTERNAL_PROXY_HOST"
@@ -40,7 +40,7 @@ var common = NewCommon(logger)
 
 type DomainProxyServer struct {
 	sharedParams           *SharedParams
-	targetWhitelist        map[string]bool
+	targetAllowlist        map[string]bool
 	enableInternalProxy    bool
 	internalProxyHost      string
 	internalProxyPort      int
@@ -53,7 +53,7 @@ type DomainProxyServer struct {
 func NewDomainProxyServer() *DomainProxyServer {
 	return &DomainProxyServer{
 		sharedParams:          common.NewSharedParams(),
-		targetWhitelist:       getTargetWhitelist(),
+		targetAllowlist:       getTargetAllowlist(),
 		enableInternalProxy:   getEnableInternalProxy(),
 		internalProxyHost:     getInternalProxyHost(),
 		internalProxyPort:     getInternalProxyPort(),
@@ -140,8 +140,8 @@ func (dps *DomainProxyServer) handleHttpConnection(sourceConnection net.Conn, wr
 	} else {
 		logger.Printf("Handling %s Connection %d with target %s:%d", DomainSocketToHttp, connectionNo, actualTargetHost, actualTargetPort)
 	}
-	// Check if target is whitelisted
-	if !dps.isTargetWhitelisted(actualTargetHost, writer) {
+	// Check if target is allowed
+	if !dps.isTargetAllowed(actualTargetHost, writer) {
 		if err := sourceConnection.Close(); err != nil {
 			common.HandleConnectionCloseError(err)
 		}
@@ -212,8 +212,8 @@ func (dps *DomainProxyServer) handleHttpsConnection(sourceConnection net.Conn, w
 	} else {
 		logger.Printf("Handling %s Connection %d with target %s:%d", DomainSocketToHttps, connectionNo, actualTargetHost, actualTargetPort)
 	}
-	// Check if target is whitelisted
-	if !dps.isTargetWhitelisted(actualTargetHost, writer) {
+	// Check if target is allowed
+	if !dps.isTargetAllowed(actualTargetHost, writer) {
 		if err := sourceConnection.Close(); err != nil {
 			common.HandleConnectionCloseError(err)
 		}
@@ -311,9 +311,9 @@ func getTargetHostAndPort(host string, defaultPort int) (string, int) {
 	return targetHost, targetPort
 }
 
-func (dps *DomainProxyServer) isTargetWhitelisted(targetHost string, writer http.ResponseWriter) bool {
-	if !dps.targetWhitelist[targetHost] {
-		message := fmt.Sprintf("Target host %s is not whitelisted", targetHost)
+func (dps *DomainProxyServer) isTargetAllowed(targetHost string, writer http.ResponseWriter) bool {
+	if !dps.targetAllowlist[targetHost] {
+		message := fmt.Sprintf("Target host %s is not allowed", targetHost)
 		logger.Println(message)
 		http.Error(writer, message, http.StatusForbidden)
 		return false
@@ -391,8 +391,8 @@ func (rw *responseWriter) WriteHeader(statusCode int) {
 	}
 }
 
-func getTargetWhitelist() map[string]bool {
-	return common.GetCsvEnvVariable(TargetWhitelistKey, DefaultTargetWhitelist)
+func getTargetAllowlist() map[string]bool {
+	return common.GetCsvEnvVariable(TargetAllowlistKey, DefaultTargetAllowlist)
 }
 
 func getEnableInternalProxy() bool {
