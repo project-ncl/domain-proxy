@@ -1,7 +1,9 @@
-# github.com/elazarl/goproxy v0.0.0-20241218172127-ac55c7698e0d
+# github.com/elazarl/goproxy v1.7.0
 ## explicit; go 1.20
 github.com/elazarl/goproxy
-# golang.org/x/net v0.32.0
+github.com/elazarl/goproxy/internal/http1parser
+github.com/elazarl/goproxy/internal/signer
+# golang.org/x/net v0.34.0
 ## explicit; go 1.18
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
