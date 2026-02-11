@@ -9,7 +9,7 @@ ENV GOTOOLCHAIN=auto \
 RUN go build -o domainproxyserver cmd/server/main.go && \
     go build -o domainproxyclient cmd/client/main.go
 
-FROM quay.io/konflux-ci/buildah-task:latest@sha256:4d8273444b0f2781264c232e12e88449bbf078c99e3da2a7f6dcaaf27bc53712
+FROM quay.io/konflux-ci/buildah-task:latest@sha256:4c470b5a153c4acd14bf4f8731b5e36c61d7faafe09c2bf376bb81ce84aa5709
 USER 0
 WORKDIR /work/
 
